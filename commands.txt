@@ -1,0 +1,10 @@
+
+DB#PUT#[{"Kp":1}]#KP
+CustomObject#PUT#{}#KP.*index*0
+ARRAY#PUT#Anuj#KP.*index*2
+DB#PUT#[{"Kp":1.0}]#KP
+ARRAY#PUT#{}#KP.*index*2
+ARRAY#PUT#Anuj#KP.*index*3
+DB#PUT#[{"Kp":1}]#KP
+CustomObject#PUT#{}#KP.*index*0
+ARRAY#PUT#Anuj#KP.*index*4
