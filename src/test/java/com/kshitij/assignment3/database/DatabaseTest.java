@@ -1,41 +1,52 @@
 package com.kshitij.assignment3.database;
-import com.google.gson.Gson;
-import com.kshitij.assignment3.Array;
-import com.kshitij.assignment3.DBObject;
+import com.kshitij.assignment3.database.array.Array;
+import com.kshitij.assignment3.database.dbobject.CustomObject;
+import com.kshitij.assignment3.decorator.ArrayExecuter;
+import com.kshitij.assignment3.decorator.DatabaseExecutor;
+import com.kshitij.assignment3.fileio.FileOperations;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class DatabaseTest {
+
     @Test
     void testSFromString() {
-//        String arr = "['1','2']";
-//        Array ab = new Array();
-//        Array s = ab.fromString(arr);
 
-//        HashMap<String,Object> abc = new HashMap<String,Object>();
-//        List<Object> c = new ArrayList<>();
-////        c.add("Kshitij");
-//        abc.put("kSHITIJ",1);
-//        c.add(abc);
-//
-//        System.out.println(c.get(0) instanceof HashMap);
+        Array firstArr = new Array();
+        ArrayExecuter array = new ArrayExecuter(firstArr);
 
-//        Gson gson = new Gson();
-//        HashMap<String,Object> s = new HashMap<>();
-//        s.put("Kshitij",1);
-//        List<Object>
-////        String json = gson.toJson(s);
-////        DBObject db = new DBObject();
-////        DBObject S = db.fromString(json);
-//        System.out.println(S.get("Kshitij"));
-        Array ab = new Array();
-        ab.fromString("");
+        CustomObject secondObj = new CustomObject();
+        CustomObject thirdObj = new CustomObject();
+
+        secondObj.put("Kp",1);
+        firstArr.put(secondObj);
+        DatabaseExecutor db = new DatabaseExecutor(new Database());
+        db.put("KP",firstArr);
+        db.getArray("KP").getObject(0).put("Abhi",thirdObj);
+        db.getArray("KP").put("Anuj");
+//        System.out.println();
+//        System.out.println(db.getArray("KP").get(1));
+        System.out.println(db.get("KP"));
+        FileOperations fileOperation = new FileOperations();
+////        Object commandHistory = fileOperation.readNext();
+        try {
+            List<String> res = fileOperation.readData();
+//            Gson gson = new Gson();
+//            Type expectedType = new TypeToken<ArrayList<Object>>(){}.getType();
+//            ArrayList object = gson.fromJson(res.get(0), expectedType);
+            Array abc = new Array();
+//            String[] r = res.get(1).split(":");
+//            Array ac = abc.fromString(r[r.length-1]);
+//            System.out.println(ac.get(0));
+//            System.out.println(ac.get(1));
+//            System.out.println(bc.getParent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         assertEquals(true,true);
     }
 }
