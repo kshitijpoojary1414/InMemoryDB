@@ -4,6 +4,7 @@ import com.kshitij.assignment3.command.IDatabaseOperation;
 import com.kshitij.assignment3.database.Database;
 import com.kshitij.assignment3.fileio.FileOperations;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,15 +18,23 @@ public class Executor {
     private DatabaseExecutor databaseExecutor;
     private FileOperations fileOperation;
     protected Boolean isSavedOperation ;
+
+    protected File commandFile;
     public Executor(Boolean isSavedOperation) {
         fileOperation = new FileOperations();
         this.isSavedOperation = isSavedOperation;
     }
 
-    public List<List<String>> retrieveOperations() {
+    public Executor(Boolean isSavedOperation, File commandFile) {
+        fileOperation = new FileOperations();
+        this.isSavedOperation = isSavedOperation;
+        this.commandFile = commandFile;
+    }
+
+    public List<List<String>> retrieveOperations(File file ) {
         List<List<String>> commands = new ArrayList<>();
         try {
-            List<String> operations = fileOperation.readData();
+            List<String> operations = fileOperation.readData(file);
 
 
             for (String operation : operations) {
@@ -39,14 +48,17 @@ public class Executor {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        fileOperation.clearFile(file);
         return commands;
     }
-    public void writeToFile(String operation) {
-        System.out.println(operation);
-        System.out.println(isSavedOperation);
+    public void writeToFile( String operation) {
+        if (commandFile == null) {
+            commandFile = new File("commands.txt");
+        }
+
 //        if (!isSavedOperation) {
             try {
-                fileOperation.writeData(operation);
+                fileOperation.writeData(commandFile,operation);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

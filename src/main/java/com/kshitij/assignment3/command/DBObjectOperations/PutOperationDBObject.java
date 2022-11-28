@@ -19,7 +19,7 @@ public class PutOperationDBObject implements IDatabaseOperation, Serializable {
         this.customObject = (CustomObject) object;
         return this.customObject.put(this.key, this.value);
     }
-    public Object undoOperation() {
+    public Object undo() {
         return this.customObject.remove(this.key);
     }
 

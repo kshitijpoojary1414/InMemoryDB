@@ -20,7 +20,7 @@ public class RemoveOperationArray implements IDatabaseOperation, Serializable {
         return this.removedValue;
     }
 
-    public Object undoOperation() {
+    public Object undo() {
         return this.array.put(this.removedValue);
     }
 

@@ -2,6 +2,8 @@ package com.kshitij.assignment3.database.array;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kshitij.assignment3.cursor.Cursor;
+import com.kshitij.assignment3.cursor.CursorMapper;
 import com.kshitij.assignment3.database.dbobject.CustomObject;
 import com.kshitij.assignment3.database.dbobject.ICustomObject;
 import com.kshitij.assignment3.exception.IncompatibleType;
@@ -9,15 +11,22 @@ import com.kshitij.assignment3.exception.KeyNotFoundException;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class Array implements IArray {
+public class Array implements IArray,Cloneable {
     private List<Object> value = new ArrayList<>();
     private Gson gson = new Gson();
 
+    private CursorMapper mapper = CursorMapper.CursorMapper();
     private String parent = "";
 
     public Array() {
 
+    }
+
+    public Object clone() throws CloneNotSupportedException
+    {
+        return fromString(toString());
     }
 
     public Array(List list) {
@@ -52,6 +61,15 @@ public class Array implements IArray {
             ((CustomObject)object).setParentForNestedValue(getParent()+".*index*"+((CustomObject)object).length());
         }
         this.value.add(object);
+
+        if(getParent().length()>0) {
+            if (!(getParent().contains("\\."))) {
+                this.mapper.notifyCursor(getParent());
+            } else {
+            String[] keys = getParent().split(".");
+            System.out.println(getParent());
+            this.mapper.notifyCursor(keys[0]);}
+        }
         return true;
     }
 
@@ -118,6 +136,16 @@ public class Array implements IArray {
         if(index< this.value.size()-1) {
             return this.value.remove(index);
         }
+
+        if(getParent().length()>0) {
+            if (!(getParent().contains("\\."))) {
+                this.mapper.notifyCursor(getParent());
+            } else {
+                String[] keys = getParent().split(".");
+                System.out.println(getParent());
+                this.mapper.notifyCursor(keys[0]);}
+        }
+
         return null;
     }
 

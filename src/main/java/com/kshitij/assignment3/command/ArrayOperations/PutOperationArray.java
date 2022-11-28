@@ -20,7 +20,7 @@ public class PutOperationArray implements IDatabaseOperation, Serializable {
         return this.array.put(value);
     }
 
-    public Object undoOperation() {
+    public Object undo() {
         return this.array.remove(this.index);
     }
 

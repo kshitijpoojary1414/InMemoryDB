@@ -7,12 +7,12 @@ public class FileOperations {
 
     static String PATH_TO_FILE = "commands.txt";
 
-    public List<String> readData() throws IOException {
+    public List<String> readData(File file) throws IOException {
         List<String> result = new ArrayList<>();
         FileInputStream inputStream = null;
         Scanner sc = null;
         try {
-            inputStream = new FileInputStream(PATH_TO_FILE);
+            inputStream = new FileInputStream(file);
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
@@ -53,9 +53,9 @@ public class FileOperations {
         }
     }
 
-    public boolean writeData(String value) throws IOException {
+    public boolean writeData(File file,String value) throws IOException {
 
-        FileOutputStream outputStream = new FileOutputStream(PATH_TO_FILE, true);
+        FileOutputStream outputStream = new FileOutputStream(file, true);
         byte[] strToBytes = value.getBytes();
         outputStream.write(System.getProperty("line.separator").getBytes());
         outputStream.write(strToBytes);

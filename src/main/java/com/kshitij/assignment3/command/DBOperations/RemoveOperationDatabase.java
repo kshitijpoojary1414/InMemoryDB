@@ -21,7 +21,7 @@ public class RemoveOperationDatabase implements IDatabaseOperation, Serializable
         return this.removedValue;
     }
 
-    public Object undoOperation() {
+    public Object undo() {
         return this.db.put(this.key,this.removedValue);
     }
 

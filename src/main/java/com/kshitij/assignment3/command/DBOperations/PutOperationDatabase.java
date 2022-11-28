@@ -22,7 +22,7 @@ public class PutOperationDatabase implements IDatabaseOperation, Serializable {
         return this.db.put(this.key, this.object);
     }
 
-    public Object undoOperation() {
+    public Object undo() {
         return this.db.remove(this.key);
     }
 

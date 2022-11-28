@@ -8,6 +8,8 @@ public interface IDatabaseOperation {
 
     Object execute (Object object);
 
+    Object undo();
+
     default String operationToString(String operation, Array array, Object value) {
         return convertParemetersToString("ARRAY", operation, value.toString(), array.getParent()+".*index*" + array.length());
     }

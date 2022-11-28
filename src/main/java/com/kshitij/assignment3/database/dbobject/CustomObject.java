@@ -2,6 +2,7 @@ package com.kshitij.assignment3.database.dbobject;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kshitij.assignment3.cursor.CursorMapper;
 import com.kshitij.assignment3.database.array.Array;
 import com.kshitij.assignment3.database.array.IArray;
 import com.kshitij.assignment3.exception.IncompatibleType;
@@ -10,14 +11,23 @@ import com.kshitij.assignment3.exception.KeyNotFoundException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class CustomObject implements ICustomObject,Serializable {
+public class CustomObject implements ICustomObject,Cloneable {
     public HashMap<String,Object> map = new HashMap<>();
     Gson gson = new Gson();
-    private String parent;
+    private String parent = "";
+
+    private CursorMapper mapper = CursorMapper.CursorMapper();
+
 
     public CustomObject() {
 
+    }
+
+    public Object clone() throws CloneNotSupportedException
+    {
+        return fromString(toString());
     }
 
     public CustomObject(HashMap<String,Object> value) {
@@ -54,6 +64,17 @@ public class CustomObject implements ICustomObject,Serializable {
             ((CustomObject)object).setParentForNestedValue(getParent()+"."+key);
         }
         this.map.put(key,object);
+
+        if(getParent().length()>0) {
+            if (!(getParent().contains("."))) {
+                this.mapper.notifyCursor(getParent());
+            } else {
+                String[] keys = getParent().split("\\.");
+                System.out.println(keys.length);
+                System.out.println(Arrays.stream(keys).collect(Collectors.toList()));
+                this.mapper.notifyCursor(keys[0]);}
+        }
+
         return true;
     }
 
@@ -154,7 +175,16 @@ public class CustomObject implements ICustomObject,Serializable {
     }
 
     public ICustomObject remove(String key) {
-        return (CustomObject)this.map.remove(key);
+        CustomObject obj = (CustomObject)this.map.remove(key);
+        if(getParent().length()>0) {
+            if (!(getParent().contains("."))) {
+                this.mapper.notifyCursor(getParent());
+            } else {
+                String[] keys = getParent().split("\\.");
+                System.out.println(getParent());
+                this.mapper.notifyCursor(keys[0]);}
+        }
+        return obj;
     }
 
 }
