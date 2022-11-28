@@ -147,6 +147,7 @@ public class DatabaseExecutor extends Executor implements IDatabase {
 
     public Object parseValue(String value) {
 
+        System.out.println("THIS IS TESY " +value);
         if (value.charAt(0) == '[') {
             return new Array().fromString(value);
         } else if (value.charAt(0) == '{') {
