@@ -7,8 +7,6 @@ import com.kshitij.assignment3.database.array.Array;
 import com.kshitij.assignment3.database.array.IArray;
 import com.kshitij.assignment3.exception.IncompatibleType;
 import com.kshitij.assignment3.exception.KeyNotFoundException;
-
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,15 +15,13 @@ public class CustomObject implements ICustomObject,Cloneable {
     public HashMap<String,Object> map = new HashMap<>();
     Gson gson = new Gson();
     private String parent = "";
-
     private CursorMapper mapper = CursorMapper.CursorMapper();
 
 
     public CustomObject() {
-
     }
 
-    public Object clone() throws CloneNotSupportedException
+    public Object clone()
     {
         return fromString(toString());
     }
@@ -40,11 +36,11 @@ public class CustomObject implements ICustomObject,Cloneable {
 
     public void setParentForNestedValue(String parent) {
         setParent(parent);
-        this.map.forEach((k,v)->{
+        map.forEach((k,v)->{
             if(v instanceof Array) {
-                ((Array)v).setParentForNestedValue(parent + "."+ k);
+                ((Array)v).setParentForNestedValue(parent );
             } else if(v instanceof CustomObject) {
-                ((CustomObject) v).setParentForNestedValue(parent + "." + k);
+                ((CustomObject) v).setParentForNestedValue(parent );
             }
         });
     }
@@ -54,36 +50,27 @@ public class CustomObject implements ICustomObject,Cloneable {
     }
 
     public boolean put(String key, Object object) {
-        if (this.map.containsKey(key)) {
+        if (map.containsKey(key)) {
             throw new KeyNotFoundException("Key exixts");
         }
 
         if (object instanceof Array) {
-            ((Array)object).setParentForNestedValue(getParent()+"."+key);
+            ((Array)object).setParentForNestedValue(getParent());
         } else if (object instanceof CustomObject) {
-            ((CustomObject)object).setParentForNestedValue(getParent()+"."+key);
+            ((CustomObject)object).setParentForNestedValue(getParent());
         }
-        this.map.put(key,object);
+        map.put(key,object);
 
-        if(getParent().length()>0) {
-            if (!(getParent().contains("."))) {
-                this.mapper.notifyCursor(getParent());
-            } else {
-                String[] keys = getParent().split("\\.");
-                System.out.println(keys.length);
-                System.out.println(Arrays.stream(keys).collect(Collectors.toList()));
-                this.mapper.notifyCursor(keys[0]);}
-        }
-
+        mapper.notifyCursor(getParent());
         return true;
     }
 
     public Object get(String key) {
-        if (!this.map.containsKey(key)) {
+        if (!map.containsKey(key)) {
             throw new KeyNotFoundException("Key not found");
         }
 
-        return this.map.get(key);
+        return map.get(key);
     }
 
     public HashMap<String,Object> convertToHashMap(CustomObject object) {
@@ -110,38 +97,38 @@ public class CustomObject implements ICustomObject,Cloneable {
     }
 
     public Integer getInt(String key) {
-        if (!this.map.containsKey(key)) {
+        if (!map.containsKey(key)) {
             throw new KeyNotFoundException("Key not found");
         }
 
-        if (!(this.map.get(key) instanceof Integer) ) {
+        if (!(map.get(key) instanceof Integer) ) {
             throw new IncompatibleType("The value is associated with this index is not an Integer");
         }
 
-        return (Integer)this.map.get(key);
+        return (Integer)map.get(key);
     }
 
     public IArray getArray(String key) {
-        if (this.map.containsKey(key)) {
+        if (map.containsKey(key)) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-        if (!(this.map.get(key) instanceof Array) ) {
+        if (!(map.get(key) instanceof Array) ) {
             throw new IncompatibleType("The value is associated with this index is not an Array");
         }
-        return (Array)this.map.get(key);
+        return (Array) map.get(key);
 
     }
 
     public ICustomObject getObject(String key) {
-        if (this.map.containsKey(key)) {
+        if (map.containsKey(key)) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-        if (!(this.map.get(key) instanceof CustomObject) ) {
+        if (!(map.get(key) instanceof CustomObject) ) {
             throw new IncompatibleType("The value is associated with this index is not an Object");
         }
-        return (CustomObject) this.map.get(key);
+        return (CustomObject) map.get(key);
 
     }
 
@@ -153,11 +140,9 @@ public class CustomObject implements ICustomObject,Cloneable {
         Type userListType = new TypeToken<HashMap<String,Object>>(){}.getType();
         HashMap object = gson.fromJson(value, userListType);
         CustomObject newCustomObject = new CustomObject();
-        this.map = object;
+
         object.forEach((k, v)
                 -> {
-            System.out.println(k);
-            System.out.println(v instanceof Map);
                 if (v instanceof ArrayList) {
                     Array ab = new Array();
                     Array a = ab.fromString(v.toString());
@@ -166,7 +151,6 @@ public class CustomObject implements ICustomObject,Cloneable {
                 }else if (v instanceof Map) {
                 CustomObject a = this.fromString(v.toString());
                 newCustomObject.put(k.toString(),a);
-                System.out.println(a);
             } else {
                     newCustomObject.put(k.toString(),v);
                 }
@@ -174,16 +158,9 @@ public class CustomObject implements ICustomObject,Cloneable {
         return newCustomObject;
     }
 
-    public ICustomObject remove(String key) {
-        CustomObject obj = (CustomObject)this.map.remove(key);
-        if(getParent().length()>0) {
-            if (!(getParent().contains("."))) {
-                this.mapper.notifyCursor(getParent());
-            } else {
-                String[] keys = getParent().split("\\.");
-                System.out.println(getParent());
-                this.mapper.notifyCursor(keys[0]);}
-        }
+    public Object remove(String key) {
+        Object obj = map.remove(key);
+        mapper.notifyCursor(getParent());
         return obj;
     }
 

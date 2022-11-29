@@ -19,15 +19,22 @@ public class PutOperationDatabase implements IDatabaseOperation, Serializable {
     @Override
     public Object execute(Object db) {
         this.db = (Database) db;
-        return this.db.put(this.key, this.object);
+        return this.db.put(key, object);
     }
 
     public Object undo() {
-        return this.db.remove(this.key);
+        return db.remove(key);
     }
 
     public String toString() {
-        return this.operationToString("PUT", this.db, this.object, this.key);
+        return operationToString("INSERT", key);
     }
+    public Object getValue() {
+        return db;
+    }
+    public String getKey() {
+        return key;
+    }
+
 
 }

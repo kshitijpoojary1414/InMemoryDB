@@ -16,14 +16,18 @@ public class PutOperationDBObject implements IDatabaseOperation, Serializable {
     }
 
     public Object execute(Object object) {
-        this.customObject = (CustomObject) object;
-        return this.customObject.put(this.key, this.value);
+        customObject = (CustomObject) object;
+        return customObject.put(key, value);
     }
     public Object undo() {
-        return this.customObject.remove(this.key);
+        return customObject.remove(key);
     }
 
     public String toString() {
-        return this.operationToString("PUT", this.customObject, this.value);
+        return operationToString("INSERT", customObject.getParent());
+    }
+
+    public Object getValue() {
+        return customObject;
     }
 }

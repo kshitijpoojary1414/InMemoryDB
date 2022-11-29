@@ -10,20 +10,9 @@ public interface IDatabaseOperation {
 
     Object undo();
 
-    default String operationToString(String operation, Array array, Object value) {
-        return convertParemetersToString("ARRAY", operation, value.toString(), array.getParent()+".*index*" + array.length());
+    default String operationToString(String operation, String key) {
+        return operation + "----" + key;
     }
 
-    default String operationToString(String operation, CustomObject customObject, Object value) {
-        return convertParemetersToString("CustomObject", operation, value.toString(), customObject.getParent());
-    }
-
-    default String operationToString(String operation, Database db, Object value, String key) {
-        return convertParemetersToString("DB", operation, value.toString(), key);
-    }
-
-    default String convertParemetersToString(String operatesOn, String operation, Object value, String parent) {
-        return ( operatesOn + "#"+operation+"#"+value + "#" + parent);
-    }
-
+    Object getValue();
 }

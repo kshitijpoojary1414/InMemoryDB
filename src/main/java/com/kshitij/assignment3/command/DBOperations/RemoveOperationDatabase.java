@@ -17,15 +17,22 @@ public class RemoveOperationDatabase implements IDatabaseOperation, Serializable
     @Override
     public Object execute(Object db) {
         this.db = (Database) db;
-        this.removedValue = this.db.remove(this.key);
-        return this.removedValue;
+        removedValue = this.db.remove(key);
+        return removedValue;
     }
 
     public Object undo() {
-        return this.db.put(this.key,this.removedValue);
+        return db.put(key, removedValue);
     }
 
     public String toString() {
-        return this.operationToString("REMOVE", this.db, this.removedValue, this.key);
+        return operationToString("REMOVE", key);
     }
+
+    public Object getValue() {
+        return null;
+    }
+
+
+
 }

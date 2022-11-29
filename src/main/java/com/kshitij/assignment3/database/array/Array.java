@@ -2,35 +2,26 @@ package com.kshitij.assignment3.database.array;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.kshitij.assignment3.cursor.Cursor;
 import com.kshitij.assignment3.cursor.CursorMapper;
 import com.kshitij.assignment3.database.dbobject.CustomObject;
 import com.kshitij.assignment3.database.dbobject.ICustomObject;
 import com.kshitij.assignment3.exception.IncompatibleType;
 import com.kshitij.assignment3.exception.KeyNotFoundException;
-
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Array implements IArray,Cloneable {
     private List<Object> value = new ArrayList<>();
     private Gson gson = new Gson();
-
     private CursorMapper mapper = CursorMapper.CursorMapper();
     private String parent = "";
 
     public Array() {
-
     }
 
-    public Object clone() throws CloneNotSupportedException
+    public Object clone()
     {
         return fromString(toString());
-    }
-
-    public Array(List list) {
-        value = list;
     }
 
     public void setParent(String parent) {
@@ -40,11 +31,11 @@ public class Array implements IArray,Cloneable {
     public void setParentForNestedValue(String parent) {
         int index = 0;
         setParent(parent);
-        this.value.forEach((v)->{
+        value.forEach((v)->{
             if(v instanceof Array) {
-                ((Array)v).setParentForNestedValue(parent+"."+"*index*" + index);
+                ((Array)v).setParentForNestedValue(parent);
             } else if (v instanceof CustomObject) {
-                ((CustomObject)v).setParentForNestedValue(parent+"."+"*index*"+ index
+                ((CustomObject)v).setParentForNestedValue(parent
                 );
             }
         });
@@ -56,76 +47,69 @@ public class Array implements IArray,Cloneable {
 
     public boolean put(Object object) {
         if (object instanceof Array) {
-            ((Array)object).setParentForNestedValue(getParent()+".*index*"+((Array) object).length());
+            ((Array)object).setParentForNestedValue(getParent());
         } else if (object instanceof CustomObject) {
-            ((CustomObject)object).setParentForNestedValue(getParent()+".*index*"+((CustomObject)object).length());
+            ((CustomObject)object).setParentForNestedValue(getParent());
         }
-        this.value.add(object);
 
-        if(getParent().length()>0) {
-            if (!(getParent().contains("\\."))) {
-                this.mapper.notifyCursor(getParent());
-            } else {
-            String[] keys = getParent().split(".");
-            System.out.println(getParent());
-            this.mapper.notifyCursor(keys[0]);}
-        }
+        value.add(object);
+
+        mapper.notifyCursor(getParent());
         return true;
     }
 
 
-
     public Object get(int index) {
-        if (index>= this.value.size()) {
+        if (index>= value.size()) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
-        return this.value.get(index);
+        return value.get(index);
     }
 
     public String getString(int index) {
-        if (index>= this.value.size()) {
+        if (index>= value.size()) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-        if (!(this.value.get(index) instanceof String) ) {
+        if (!(value.get(index) instanceof String) ) {
             throw new IncompatibleType("The value is associated with this index is not an Integer");
         }
-        return (String)this.value.get(index);
+        return (String)value.get(index);
     }
 
     public Integer getInt(int index) {
-        if (index>= this.value.size()) {
+        if (index>= value.size()) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-        if (!(this.value.get(index) instanceof Integer) ) {
+        if (!(value.get(index) instanceof Integer) ) {
             throw new IncompatibleType("The value is associated with this index is not an Integer");
         }
-        return (Integer)this.value.get(index);
+        return (Integer)value.get(index);
     }
 
     public IArray getArray(int index) {
-        if (index>= this.value.size()) {
+        if (index>= value.size()) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-            if (!(this.value.get(index) instanceof Array) ) {
+            if (!(value.get(index) instanceof Array) ) {
             throw new IncompatibleType("The value is associated with this index is not an Array");
         }
-        return (Array) this.value.get(index);
+        return (Array) value.get(index);
 
     }
 
     public ICustomObject getObject(int index) {
-        if (index>= this.value.size()) {
+        if (index>= value.size()) {
             throw new KeyNotFoundException("Index Out Of Bounds");
         }
 
-        if (!(this.value.get(index) instanceof CustomObject) ) {
+        if (!(value.get(index) instanceof CustomObject) ) {
             throw new IncompatibleType("The value is associated with this index is not an Integer");
         }
 
-        return (CustomObject) this.value.get(index);
+        return (CustomObject) value.get(index);
     }
 
     public int length() {
@@ -133,64 +117,51 @@ public class Array implements IArray,Cloneable {
     }
 
     public Object remove(int index) {
-        if(index< this.value.size()-1) {
-            return this.value.remove(index);
+        if(index<= value.size()-1) {
+            return value.remove(index);
         }
-
-        if(getParent().length()>0) {
-            if (!(getParent().contains("\\."))) {
-                this.mapper.notifyCursor(getParent());
-            } else {
-                String[] keys = getParent().split(".");
-                System.out.println(getParent());
-                this.mapper.notifyCursor(keys[0]);}
-        }
-
+        mapper.notifyCursor(getParent());
         return null;
     }
 
-
     public ArrayList<Object> convertToArrayList(Array array) {
-        ArrayList newArrayList = new ArrayList<>();
+        ArrayList arrayList = new ArrayList<>();
 
         array.value.forEach(v -> {
-            if (v instanceof Array) {
-                ArrayList a = this.convertToArrayList((Array)v);
-                newArrayList.add(a);
+            if (v instanceof Array){
+                arrayList.add(convertToArrayList((Array)v));
             }else if (v instanceof CustomObject) {
-                HashMap a = new CustomObject().convertToHashMap((CustomObject) v);
-                newArrayList.add(a);
+                arrayList.add(new CustomObject().convertToHashMap((CustomObject) v));
             } else {
-                newArrayList.add(v);
+                arrayList.add(v);
             }
         });
-        return newArrayList;
+        return arrayList;
     }
 
     public String toString() {
-        ArrayList arr = convertToArrayList(this);
-        return gson.toJson(arr);
+        return gson.toJson(convertToArrayList(this));
     }
 
-
     public Array fromString(String value) {
-        Array newArray = new Array();
+        Array array = new Array();
         Type expectedType = new TypeToken<ArrayList<Object>>(){}.getType();
         ArrayList object = gson.fromJson(value, expectedType);
+
         object.forEach((v)
                 -> {
             if (v instanceof ArrayList) {
                 Array a = this.fromString(v.toString());
-                newArray.put(a);
+                array.put(a);
             }else if (v instanceof Map) {
                 CustomObject db = new CustomObject();
                 CustomObject a = db.fromString(v.toString());
-                newArray.put(a);
+                array.put(a);
             } else {
-                newArray.put(v);
+                array.put(v);
             }
         });
-        return newArray;
+        return array;
     }
 
 }

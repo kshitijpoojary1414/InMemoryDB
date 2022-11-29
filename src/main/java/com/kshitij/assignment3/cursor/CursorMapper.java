@@ -19,7 +19,7 @@ public class CursorMapper {
     }
 
     public boolean put(String key, Cursor cursor) {
-        if(this.map.containsKey(key)) {
+        if(map.containsKey(key)) {
             map.put(key,cursor);
         }
         map.put(key,cursor);
@@ -27,15 +27,15 @@ public class CursorMapper {
     }
 
     public boolean remove(String key) {
-        if(!this.map.containsKey(key)) {
+        if(!map.containsKey(key)) {
             map.remove(key);
         }
         return true;
     }
 
     public void notifyCursor(String key) {
-        if (this.map.containsKey(key)) {
-            Cursor cursor = this.map.get(key);
+        if (map.containsKey(key)) {
+            Cursor cursor = map.get(key);
             cursor.updateObserver();
         }
     }

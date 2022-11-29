@@ -12,20 +12,20 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class Executor {
+public class Client {
     private Stack<IDatabaseOperation> operationList;
     private Database db;
-    private DatabaseExecutor databaseExecutor;
+    private DatabaseClient databaseClient;
     private FileOperations fileOperation;
     protected Boolean isSavedOperation ;
 
     protected File commandFile;
-    public Executor(Boolean isSavedOperation) {
+    public Client(Boolean isSavedOperation) {
         fileOperation = new FileOperations();
         this.isSavedOperation = isSavedOperation;
     }
 
-    public Executor(Boolean isSavedOperation, File commandFile) {
+    public Client(Boolean isSavedOperation, File commandFile) {
         fileOperation = new FileOperations();
         this.isSavedOperation = isSavedOperation;
         this.commandFile = commandFile;
@@ -39,7 +39,7 @@ public class Executor {
 
             for (String operation : operations) {
                 if(operation.length()>0) {
-                    String[] res = operation.split("#");
+                    String[] res = operation.split("----");
                     List<String> resp = Arrays.stream(res).collect(Collectors.toList());
                     commands.add(resp);
                 }
@@ -56,12 +56,10 @@ public class Executor {
             commandFile = new File("commands.txt");
         }
 
-//        if (!isSavedOperation) {
-            try {
-                fileOperation.writeData(commandFile,operation);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-//        }
+        try {
+            fileOperation.writeData(commandFile,operation);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

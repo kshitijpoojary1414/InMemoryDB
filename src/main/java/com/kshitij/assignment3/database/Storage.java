@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kshitij.assignment3.database.array.Array;
 import com.kshitij.assignment3.database.dbobject.CustomObject;
-import com.kshitij.assignment3.decorator.DatabaseExecutor;
+import com.kshitij.assignment3.decorator.DatabaseClient;
 import com.kshitij.assignment3.fileio.FileOperations;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -19,10 +18,10 @@ import java.util.Map;
 public class Storage {
     private HashMap<String, Object> db;
 
-    private DatabaseExecutor databaseExecutor;
-    public Storage(DatabaseExecutor databaseExecutor) {
+    private DatabaseClient databaseClient;
+    public Storage(DatabaseClient databaseClient) {
         db = new HashMap<>();
-        this.databaseExecutor = databaseExecutor;
+        this.databaseClient = databaseClient;
     }
 
     public boolean put(String key, Object value) {
@@ -49,15 +48,15 @@ public class Storage {
 
     public void snapshot(){
         FileOperations fileOperation = new FileOperations();
+        System.out.println("Memento" + toString());
         try {
             fileOperation.clearFile(new File("dbSnapshot.txt"));
             fileOperation.writeData(new File("dbSnapshot.txt"),toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        fileOperation.clearFile(new File("commands.txt"));
 
-//        clears the commands from file after backup
-//        FileOperations.clearFile("");
     }
 
     public void snapshot(File commands, File dbSnapshot){
@@ -133,12 +132,9 @@ public class Storage {
             db = fromString(restoredDB.get(1));
         }
 
-        databaseExecutor.executeSavedOperations(null);
+        databaseClient.executeSavedOperations(null);
     }
 
-//    public void clear(){
-//        FileOperations.clearFile(new File(DATABASE_MEMENTO_FILEPATH));
-//    }
     public void recover(File commands, File dbSnapshot){
         FileOperations fileOperation = new FileOperations();
         List<String> restoredDB =
@@ -153,7 +149,7 @@ public class Storage {
             db = fromString(restoredDB.get(0));
         }
 
-        databaseExecutor.executeSavedOperations(commands);
+        databaseClient.executeSavedOperations(commands);
 
     }
 }

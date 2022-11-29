@@ -15,15 +15,19 @@ public class RemoveOperationDBObject implements IDatabaseOperation, Serializable
     }
 
     public Object execute(Object object) {
-        this.customObject = (CustomObject) object;
-        return this.customObject.remove(this.key);
+        customObject = (CustomObject) object;
+        return customObject.remove(key);
     }
 
     public Object undo() {
-        return this.customObject.put(this.key, this.removedValue);
+        return customObject.put(key, removedValue);
     }
 
     public String toString() {
-        return this.operationToString("REMOVE", this.customObject, this.removedValue);
+        return operationToString("INSERT", customObject.getParent());
+    }
+
+    public Object getValue() {
+        return customObject;
     }
 }

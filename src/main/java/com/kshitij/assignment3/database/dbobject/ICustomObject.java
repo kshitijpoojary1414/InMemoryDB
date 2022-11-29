@@ -6,4 +6,6 @@ public interface ICustomObject {
     public boolean put(String key, Object value);
 
     public Object remove(String key);
+
+    public ICustomObject getObject(String key);
 }

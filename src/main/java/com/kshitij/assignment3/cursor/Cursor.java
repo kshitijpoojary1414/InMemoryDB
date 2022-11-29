@@ -23,12 +23,12 @@ public class Cursor {
 
         this.db = db;
         this.key = key;
-        this.currentValue = this.db.get(key);
+        currentValue = this.db.get(key);
 
-        if (this.currentValue instanceof Array) {
-            this.currentValue = ((Array)this.db.get(key)).clone();
-        } else if(this.currentValue instanceof CustomObject) {
-            this.currentValue = ((CustomObject)this.db.get(key)).clone();
+        if (currentValue instanceof Array) {
+            currentValue = ((Array) db.get(key)).clone();
+        } else if(currentValue instanceof CustomObject) {
+            currentValue = ((CustomObject)this.db.get(key)).clone();
         }
 
         mapper.put(key,this);
@@ -37,8 +37,8 @@ public class Cursor {
     public boolean updateObserver() {
         String message = "";
         try {
-            Object newValue = this.db.get(key);
-            message = "The " + key + " in the database has been updated. Old Value :- " + this.currentValue.toString() + " New Value :- " + newValue.toString();
+            Object newValue = db.get(key);
+            message = "The " + key + " in the database has been updated. Old Value :- " + currentValue.toString() + " New Value :- " + newValue.toString();
 
         } catch(KeyNotFoundException e) {
             message = "The " + key + " has been removed from the database";
@@ -62,34 +62,34 @@ public class Cursor {
     }
 
     public Object get() {
-        return this.currentValue;
+        return currentValue;
     }
 
     public Integer getInt() {
-        if(!(this.currentValue instanceof Integer)) {
+        if(!(currentValue instanceof Integer)) {
             throw new IncompatibleType("The current value is not an integer");
         }
-        return (Integer) this.currentValue;
+        return (Integer) currentValue;
     }
 
     public String getString() {
-        if(!(this.currentValue instanceof String)) {
+        if(!(currentValue instanceof String)) {
             throw new IncompatibleType("The current value is not a string");
         }
-        return (String) this.currentValue;
+        return (String) currentValue;
     }
 
     public Array getArray() {
-        if(!(this.currentValue instanceof Array)) {
+        if(!(currentValue instanceof Array)) {
             throw new IncompatibleType("The current value is not an Array");
         }
-        return (Array) this.currentValue;
+        return (Array) currentValue;
     }
 
     public CustomObject getObject() {
-        if(!(this.currentValue instanceof CustomObject)) {
+        if(!(currentValue instanceof CustomObject)) {
             throw new IncompatibleType("The current value is not a custom object");
         }
-        return (CustomObject) this.currentValue;
+        return (CustomObject) currentValue;
     }
 }

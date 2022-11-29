@@ -5,25 +5,24 @@ import com.kshitij.assignment3.database.array.Array;
 import com.kshitij.assignment3.database.dbobject.CustomObject;
 import com.kshitij.assignment3.database.IDatabase;
 import com.kshitij.assignment3.database.Database;
-import com.kshitij.assignment3.decorator.DatabaseExecutor;
+import com.kshitij.assignment3.database.dbobject.ICustomObject;
+import com.kshitij.assignment3.decorator.DatabaseClient;
 
 import java.util.Stack;
 
 public class Transaction implements IDatabase {
 
     private Database db;
-    private DatabaseExecutor databaseExecutor;
+    private DatabaseClient databaseClient;
 
     private Boolean isActive = true;
     Stack<IDatabaseOperation> operations = new Stack<>();
     public Transaction(Database db){
         this.db = db;
-        System.out.println("Current db");
-        System.out.println(this.db.toString());
-        databaseExecutor = new DatabaseExecutor(this.db,operations);
+        databaseClient = new DatabaseClient(this.db,operations);
     }
     public boolean put(String key, Object value) {
-        return databaseExecutor.put(key,value);
+        return databaseClient.put(key,value);
     }
 
     public int getInt(String key) {
@@ -38,7 +37,7 @@ public class Transaction implements IDatabase {
         return this.db.getArray(key);
     }
 
-    public CustomObject getObject(String key) {
+    public ICustomObject getObject(String key) {
         return this.db.getObject(key);
     }
 
@@ -48,28 +47,24 @@ public class Transaction implements IDatabase {
     }
 
     public Object remove(String key) {
-        return this.databaseExecutor.remove(key);
+        return this.databaseClient.remove(key);
     }
 
     public boolean abort() {
-        this.operations = this.databaseExecutor.getCommands();
-        System.out.println("Command lit");
-        System.out.println(this.operations);
+        this.operations = this.databaseClient.getCommands();
+
         while(!this.operations.isEmpty()) {
             IDatabaseOperation operation = this.operations.pop();
-            System.out.println(operation);
             operation.undo();
         }
         this.isActive = false;
-        System.out.println("Herre");
 
-        System.out.println(databaseExecutor.toString());
-        databaseExecutor.snapshot();
+        databaseClient.snapshot();
         return true;
     }
 
     public boolean commit() {
-        databaseExecutor.commitCommands();
+        databaseClient.commitCommands();
         this.isActive = false;
         return true;
     }

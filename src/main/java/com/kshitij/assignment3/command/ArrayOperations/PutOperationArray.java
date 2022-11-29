@@ -21,11 +21,15 @@ public class PutOperationArray implements IDatabaseOperation, Serializable {
     }
 
     public Object undo() {
-        return this.array.remove(this.index);
+        return array.remove(index);
     }
 
     public String toString() {
-        return this.operationToString("PUT", this.array, this.value);
+        return operationToString("INSERT", array.getParent());
+    }
+
+    public Object getValue() {
+        return array;
     }
 
 }

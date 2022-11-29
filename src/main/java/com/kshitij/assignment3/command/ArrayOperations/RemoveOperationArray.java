@@ -16,15 +16,19 @@ public class RemoveOperationArray implements IDatabaseOperation, Serializable {
 
     public Object execute(Object array) {
         this.array = (Array) array;
-        this.removedValue =  this.array.remove(this.index);
-        return this.removedValue;
+        removedValue =  this.array.remove(index);
+        return removedValue;
     }
 
     public Object undo() {
-        return this.array.put(this.removedValue);
+        return array.put(removedValue);
     }
 
     public String toString() {
-        return this.operationToString("REMOVE", this.array, this.removedValue);
+        return operationToString("INSERT", array.getParent());
+    }
+
+    public Object getValue() {
+        return array;
     }
 }

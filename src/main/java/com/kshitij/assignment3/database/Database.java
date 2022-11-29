@@ -4,17 +4,15 @@ import com.kshitij.assignment3.cursor.Cursor;
 import com.kshitij.assignment3.cursor.CursorMapper;
 import com.kshitij.assignment3.database.array.Array;
 import com.kshitij.assignment3.database.dbobject.CustomObject;
-import com.kshitij.assignment3.decorator.DatabaseExecutor;
+import com.kshitij.assignment3.database.dbobject.ICustomObject;
+import com.kshitij.assignment3.decorator.DatabaseClient;
 import com.kshitij.assignment3.exception.IncompatibleType;
 import com.kshitij.assignment3.exception.KeyNotFoundException;
 import com.kshitij.assignment3.transaction.Transaction;
-
-import javax.xml.crypto.Data;
 import java.io.File;
-import java.io.Serializable;
-import java.util.HashMap;
 
-public class Database implements IDatabase, Serializable {
+
+public class Database implements IDatabase {
     private Storage db;
 
     private CursorMapper mapper = CursorMapper.CursorMapper();
@@ -25,16 +23,13 @@ public class Database implements IDatabase, Serializable {
 
     long END_TIME = System.currentTimeMillis() + TIME_SECONDS_TO_SNAPSHOT * 1000;
     public Database() {
-        db = new Storage( new DatabaseExecutor(this));
+        db = new Storage( new DatabaseClient(this));
         db.recover();
-//        CURRENT_COMMAND_COUNT = db.size();
     }
 
     public Database(File mementoFile, File commandFile) {
-        db = new Storage( new DatabaseExecutor(this,commandFile));
+        db = new Storage( new DatabaseClient(this,commandFile));
         db.recover(mementoFile,commandFile);
-//        CURRENT_COMMAND_COUNT = db.size();
-
     }
 
     public String toString() {
@@ -119,8 +114,7 @@ public class Database implements IDatabase, Serializable {
             return null;
         }
         Object removedObject = db.remove(key);
-        System.out.println(removedObject);
-        System.out.println("Object removed");
+
         this.mapper.notifyCursor(key);
         checkBackup();
         return removedObject;
@@ -157,12 +151,6 @@ public class Database implements IDatabase, Serializable {
     }
 
     public void checkBackup() {
-//        CURRENT_COMMAND_COUNT++;
-//        System.out.println(CURRENT_COMMAND_COUNT);
-//        if(CURRENT_COMMAND_COUNT >= COMMAND_LIMIT) {
-//            db.snapshot();
-//        }
-
         if(System.currentTimeMillis() > END_TIME){
             db.snapshot();
             END_TIME = System.currentTimeMillis() + TIME_SECONDS_TO_SNAPSHOT * 1000;
